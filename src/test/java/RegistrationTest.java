@@ -56,9 +56,6 @@ public class RegistrationTest {
 
     @After
     public void tearDown() {
-        if (accessToken != null) {
-            UserData.deleteUser(accessToken);
-        }
         driver.quit();
     }
 }

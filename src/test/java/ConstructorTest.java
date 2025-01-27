@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 public class ConstructorTest {
     private MainPage objMainPage;
     private WebDriver driver;
-    String accessToken;
 
     @Before
     public void before() {
@@ -42,9 +41,6 @@ public class ConstructorTest {
 
     @After
     public void tearDown() {
-        if (accessToken != null) {
-            UserData.deleteUser(accessToken);
-        }
         driver.quit();
     }
 }

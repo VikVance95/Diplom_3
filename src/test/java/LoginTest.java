@@ -17,7 +17,6 @@ public class LoginTest {
     private WebDriver driver;
     private String email;
     private String password;
-    String accessToken;
 
     @Before
     public void before() {
@@ -77,9 +76,6 @@ public class LoginTest {
     }
     @After
     public void tearDown() {
-        if (accessToken != null) {
-            UserData.deleteUser(accessToken);
-        }
         driver.quit();
     }
 }

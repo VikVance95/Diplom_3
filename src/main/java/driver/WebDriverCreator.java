@@ -22,12 +22,14 @@ public class WebDriverCreator {
 
     public static WebDriver createChromeDriver() {
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--start-maximized");
         return new ChromeDriver(options);
     }
 
     public static WebDriver createYandexDriver() {
         System.setProperty ("webdriver.chrome.driver", "src/main/resources/webdriver/chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--start-maximized");
         options.setBinary("src/main/resources/webdriver/yandexdriver.exe");
         return new ChromeDriver(options);
     }
