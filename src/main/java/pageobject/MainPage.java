@@ -2,86 +2,88 @@ package pageobject;
 
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
 public class MainPage {
-    private final WebDriver driver;
-    private final static String mainPage = "https://stellarburgers.nomoreparties.site/";
+    private WebDriver driver;
+
+    public static final String URL_MAIN_PAGE = "https://stellarburgers.nomoreparties.site";
+
+    //кнопка Личный кабинет
+    private By personalAccountButton = By.xpath(".//p[contains(text(),'Личный Кабинет')]");
+    //кнопка Войти в аккаунт
+    private By loginAccountButton = By.xpath(".//button[contains(text(),'Войти в аккаунт')]");
+    //Кнопка Оформить заказ
+    private By createOrderButton = By.xpath(".//button[contains(text(),'Оформить заказ')]");
+    //надпись Соберите бургер
+    private By inscriptionCollectBurger = By.xpath(".//h1[contains(text(),'Соберите бургер')]");
+    //кнопка Булки
+    private By bunsButton = By.xpath(".//span[contains(text(),'Булки')]/parent::div");
+    //кнопка Соусы
+    private By saucesButton = By.xpath(".//span[contains(text(),'Соусы')]/parent::div");
+    //кнопка Начинки
+    private By fillingsButton = By.xpath(".//span[contains(text(),'Начинки')]/parent::div");
+    //активная вкладка раздела
+    private By activeSection = By.xpath(".//div[contains(@class,'current')]/span");
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    private final By loginAccountButton = By.xpath(".//*[text() = 'Войти в аккаунт']"); //кнопка "Войти в аккаунт"
-    private final By personalAreaButton = By.xpath(".//*[text() = 'Личный Кабинет']"); //кнопка "Личный Кабинет"
-
-    private final By bunsButton = By.xpath(".//span[text()='Булки']/.."); //вкладка "Булки"
-
-    private final By sauceButton = By.xpath("//span[text()='Соусы']/.."); //вкладка "Соусы"
-
-    private final By fillingButton = By.xpath("//span[text()='Начинки']/.."); //вкладка "Начинки"
-
-    private final By orderButton = By.className("button_button__33qZ0"); //кнопка "Оформить заказ"
-
-    private final By bunElement = By.xpath(".//*/div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Булки']");
-    private final By sauceElement = By.xpath(".//*/div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Соусы']");
-    private final By fillingElement = By.xpath(".//*/div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Начинки']");
-
-    @Step("Открыть главную страницу")
-    public void openMainPage(){
-        driver.get(mainPage);
+    @Step("click Personal Account Button")
+    public void clickPersonalAccountButton(){
+        driver.findElement(personalAccountButton).isEnabled();
+        driver.findElement(personalAccountButton).click();
     }
 
-    @Step("Войти в аккаунт на главной странице")
-    public void checkAuthorization() {
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(ExpectedConditions.visibilityOfElementLocated(loginAccountButton));
-
-        Object elementLoginAccountButton = driver.findElement(loginAccountButton);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", elementLoginAccountButton);
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(ExpectedConditions.elementToBeClickable(loginAccountButton));
-
+    @Step("click Login Account Button")
+    public void clickLoginAccountButton(){
+        driver.findElement(loginAccountButton).isEnabled();
         driver.findElement(loginAccountButton).click();
     }
 
-    @Step("Войти в личный кабинет")
-    public void checkPersonalArea() {
-        new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.elementToBeClickable(personalAreaButton));
-
-        driver.findElement(personalAreaButton).click();
+    @Step("is Create Order Button Visible")
+    public boolean isCreateOrderButtonVisible(){
+        return driver.findElement(createOrderButton).isDisplayed();
     }
 
-    @Step("Загрузка главной страницы, отображение кнопки <Оформить заказ>")
-    public Object checkOrderButton () {
-        WebElement textButton = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.visibilityOfElementLocated(orderButton));
-
-        return textButton.getText();
+    @Step("is Inscription Collect Burger Visible")
+    public boolean isInscriptionCollectBurgerVisible(){
+        return driver.findElement(inscriptionCollectBurger).isDisplayed();
     }
 
-    @Step("Открытие вкладки с булками")
-    public boolean checkBuns() {
-        driver.findElement(sauceButton).click();
+    @Step("click Buns Button")
+    public void clickBunsButton(){
+        driver.findElement(bunsButton).isEnabled();
         driver.findElement(bunsButton).click();
-        return driver.findElement(bunElement).isDisplayed();
-    }
-    @Step("Открытие вкладки с соусами")
-    public boolean checkSauce() {
-        driver.findElement(sauceButton).click();
-        return driver.findElement(sauceElement).isDisplayed();
     }
 
-    @Step("Открытие вкладки с начинками")
-    public boolean checkFillings() {
-        driver.findElement(fillingButton).click();
-        return driver.findElement(fillingElement).isDisplayed();
+    @Step("click Sauces Button")
+    public void clickSaucesButton(){
+        driver.findElement(saucesButton).isEnabled();
+        driver.findElement(saucesButton).click();
+    }
+
+    @Step("click Fillings Button")
+    public void clickFillingsButton(){
+        driver.findElement(fillingsButton).isEnabled();
+        driver.findElement(fillingsButton).click();
+    }
+
+    @Step("get Button Text")
+    public String getButtonText(){
+        return driver.findElement(activeSection).getText();
+    }
+
+    @Step("wait Loading Main Page")
+    public void waitLoadingMainPage(){
+        new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOfElementLocated(inscriptionCollectBurger));
+    }
+
+    @Step("wait Authorization")
+    public void waitAuthorization (){
+        new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOfElementLocated(createOrderButton));
     }
 }

@@ -1,81 +1,85 @@
-import driver.WebDriverCreator;
+import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.example.UserApi;
+import org.example.UserData;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import pageobject.ForgotPassPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import pageobject.AuthorizationPage;
+import pageobject.ForgotPasswordPage;
 import pageobject.LoginPage;
 import pageobject.MainPage;
-import pageobject.RegisterPage;
 
-import static org.junit.Assert.assertEquals;
+import static pageobject.MainPage.URL_MAIN_PAGE;
 
-public class LoginTest {
-    private RegisterPage objRegisterPage;
-    private LoginPage objLoginPage;
-    private WebDriver driver;
-    private String email;
-    private String password;
-
+public class LoginTest extends BaseClassTest {
+    UserData user;
     @Before
-    public void before() {
-        driver = WebDriverCreator.createWebDriver();
-
-        UserData userData = new UserData();
-        String name = userData.getRandomName();
-        email = userData.getRandomEmail();
-        password = userData.getRandomPassword();
-        objRegisterPage = new RegisterPage(driver);
-        objRegisterPage.openRegisterPage();
-        objRegisterPage.createUser(name,email,password);
+    @Step("set Up")
+    public void settUp(){
+        RestAssured.baseURI = URL_MAIN_PAGE;
+        userApi = new UserApi();
+        user = new UserData(random + "@ya.ru", random, random);
+        Response response = userApi.createUser(user);
     }
 
     @Test
-    @DisplayName("Вход по кнопке «Войти в аккаунт» на главной")
-    public void mainPageTest() {
+    @DisplayName("login With Login Account Button Test")
+    @Description("Проверка входа по кнопке «Войти в аккаунт» на главной странице")
+    public void loginWithLoginAccountButtonTest(){
         MainPage objMainPage = new MainPage(driver);
-        objMainPage.openMainPage();
-        objMainPage.checkAuthorization();
-        objLoginPage = new LoginPage(driver);
-        objLoginPage.login(email, password);
-        assertEquals("Ошибка", "Войти", objMainPage.checkOrderButton());
-    }
-    @Test
-    @DisplayName("Вход через кнопку «Личный кабинет»")
-    public void personalAccountTest() {
-        MainPage objMainPage = new MainPage(driver);
-        objMainPage.openMainPage();
-        objMainPage.checkPersonalArea();
-        objLoginPage = new LoginPage(driver);
-        objLoginPage.login(email, password);
-        assertEquals("Ошибка", "Войти", objMainPage.checkOrderButton());
-    }
-
-    @Test
-    @DisplayName("Вход через кнопку в форме регистрации")
-    public void registrationLinkTest() {
-        objRegisterPage.openRegisterPage();
-        objRegisterPage.clickAuthLinkLogin();
+        objMainPage.clickLoginAccountButton();
         LoginPage objLoginPage = new LoginPage(driver);
-        objLoginPage.login(email, password);
-        MainPage objMainPage = new MainPage(driver);
-        assertEquals("Ошибка", "Войти", objMainPage.checkOrderButton());
+        objLoginPage.setInputData(random + "@ya.ru", random);
+        objMainPage.waitAuthorization();
+        Assert.assertTrue(objMainPage.isCreateOrderButtonVisible());
     }
 
     @Test
-    @DisplayName("Вход через кнопку в форме восстановления пароля")
-    public void restorePasswordLinkTest() {
-        ForgotPassPage objForgotPassPage = new ForgotPassPage(driver);
-        objForgotPassPage.openRestorePage();
-        objForgotPassPage.clickForgotPassword();
-        LoginPage objLoginPage = new LoginPage(driver);
-        objLoginPage.login(email,password);
+    @DisplayName("login With Personal Account Button Test")
+    @Description("Проверка входа через кнопку «Личный кабинет»")
+    public void loginWithPersonalAccountButtonTest(){
         MainPage objMainPage = new MainPage(driver);
-        assertEquals("Ошибка", "Войти", objMainPage.checkOrderButton());
+        objMainPage.clickPersonalAccountButton();
+        LoginPage objLoginPage = new LoginPage(driver);
+        objLoginPage.setInputData(random + "@ya.ru", random);
+        objMainPage.waitAuthorization();
+        Assert.assertTrue(objMainPage.isCreateOrderButtonVisible());
     }
-    @After
-    public void tearDown() {
-        driver.quit();
+
+    @Test
+    @DisplayName("login With Registration Form Login Button Test")
+    @Description("Проверка входа через кнопку в форме регистрации")
+    public void loginWithRegistrationFormLoginButtonTest(){
+        MainPage objMainPage = new MainPage(driver);
+        objMainPage.clickPersonalAccountButton();
+        LoginPage objLoginPage = new LoginPage(driver);
+        objLoginPage.clickRegisterButton();
+        AuthorizationPage objAuthorizationPage = new AuthorizationPage(driver);
+        objAuthorizationPage.clickLoginButton();
+        objLoginPage.setInputData(random + "@ya.ru", random);
+        objMainPage.waitAuthorization();
+        Assert.assertTrue(objMainPage.isCreateOrderButtonVisible());
+    }
+
+    @Test
+    @DisplayName("login With Password Recovery Button Test")
+    @Description("Проверка входа через кнопку в форме восстановления пароля")
+    public void loginWithPasswordRecoveryButtonTest(){
+        MainPage objMainPage = new MainPage(driver);
+        objMainPage.clickPersonalAccountButton();
+        LoginPage objLoginPage = new LoginPage(driver);
+        objLoginPage.clickPasswordRecoveryButton();
+        ForgotPasswordPage objForgotPasswordPage = new ForgotPasswordPage(driver);
+        objForgotPasswordPage.clickLoginButton();
+        objLoginPage.setInputData(random + "@ya.ru", random);
+        objMainPage.waitAuthorization();
+        Assert.assertTrue(objMainPage.isCreateOrderButtonVisible());
     }
 }
